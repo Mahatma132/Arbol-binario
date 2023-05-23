@@ -1,0 +1,265 @@
+#include <iostream>
+
+template<class T>
+class Arbol;
+
+template<class T>
+class nodo{
+private:
+    T data;
+    nodo<T>* izq;
+    nodo<T>* der;
+public:
+      T getdata()
+    {
+        return data;
+    }
+    nodo():izq(nullptr), der(nullptr){};
+    friend class Arbol<T>;
+};
+
+template<class T>
+class Arbol
+{
+private:
+    nodo<T>* raiz;
+public:
+    Arbol(): raiz(nullptr){};
+
+    void inicializa();
+    bool vacio();
+    T recupera(nodo<T>*);
+    void inserta(T);
+    nodo<T>* localiza(T);
+    nodo<T>* menor();
+    nodo<T>* mayor();
+    bool es_hoja();
+    void recorrido_preorder();
+    void recorrido_inorder();
+    void recorrido_postorder();
+    void elimina(nodo<T>*);
+    int altura();
+};
+
+template<class T>
+void Arbol<T>::inicializa()
+{
+    raiz=nullptr;
+}
+
+template<class T>
+bool Arbol<T>::vacio()
+{
+        if(raiz=nullptr)
+        {
+            return true;
+        }
+        return false;
+}
+
+template<class T>
+T Arbol<T>::recupera(nodo<T>* pos)
+{
+    if(raiz==nullptr || pos==nullptr)
+    {
+
+    } else{
+        return pos->data;
+    }
+}
+
+template<class T>
+void Arbol<T>::inserta(T elem)
+{
+    if(raiz==nullptr)
+    {
+        nodo<T>* aux=new nodo<T>;
+        aux->data=elem;
+        raiz=aux;
+    }
+    else
+    {
+        if(elem<raiz->elem)
+        {
+            inserta(raiz->izq,elem);
+        }
+        else
+        {
+           inserta(raiz->der,elem);
+        }
+    }
+}
+
+template<class T>
+nodo<T>* Arbol<T>::localiza(T elem)
+{
+    if(raiz=nullptr)
+    {
+
+    }
+    else
+    {
+        if(elem=raiz->data)
+        {
+            localiza(elem, raiz->izq);
+        }
+        else
+        {
+            localiza(elem, raiz->der);
+        }
+    }
+}
+
+template<class T>
+nodo<T>* Arbol<T>::menor()
+{
+    if(raiz=nullptr)
+    {
+
+    }
+    else
+    {
+        if(raiz->izq==nullptr)
+        {
+            return raiz;
+        }
+        else
+        {
+            return menor(raiz->izq);
+        }
+    }
+}
+
+template<class T>
+nodo<T>* Arbol<T>::mayor()
+{
+    if(raiz=nullptr)
+    {
+
+    }
+    else
+    {
+        if(raiz->der==nullptr)
+        {
+            return raiz;
+        }
+        else
+        {
+            return menor(raiz->der);
+        }
+    }
+}
+
+template<class T>
+bool Arbol<T>::es_hoja()
+{
+    if(raiz==nullptr)
+    {
+        return false;
+    }
+
+    if(raiz->izq=nullptr && raiz->der=nullptr)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+template<class T>
+void Arbol<T>::recorrido_preorder()
+{
+    if(raiz==nullptr)
+       {
+        return;
+       }
+
+        std::cout << raiz->elem <<std::endl;
+        recorrido_preorder(raiz->izq);
+        recorrido_preorder(raiz->der);
+}
+
+template<class T>
+void Arbol<T>::recorrido_inorder()
+{
+    if(raiz==nullptr)
+       {
+        return;
+       }
+
+        recorrido_inorder(raiz->izq);
+        std::cout << raiz->elem <<std::endl;
+        recorrido_inorder(raiz->der);
+}
+
+template<class T>
+void Arbol<T>::recorrido_postorder()
+{
+    if(raiz==nullptr)
+       {
+        return;
+       }
+
+        recorrido_postorder(raiz->izq);
+        recorrido_postorder(raiz->der);
+        std::cout << raiz->elem <<std::endl;
+}
+
+template<class T>
+void Arbol<T>::elimina(nodo<T>* pos)
+{
+    nodo<T>* pos_reemplazo;
+    if(raiz==nullptr || pos==nullptr)
+    {
+        std::cout<<"Dato no encontado"<<std::endl;
+        return;
+    }
+
+    if(es_hoja())
+    {
+        delete raiz;
+        raiz=nullptr;
+        return;
+    }
+    else
+    {
+        if(raiz->izq!=nullptr)
+        {
+            pos_reemplazo = mayor(raiz->izq);
+        }
+        else
+        {
+            pos_reemplazo = menor(raiz->der);
+        }
+    }
+    raiz->data = pos_reemplazo->data;
+    elimina(pos_reemplazo,raiz);
+}
+
+template<class T>
+int Arbol<T>::altura()
+{
+    if (raiz==nullptr)
+    {
+
+    }
+
+    int alt_izq=altura(raiz->izq);
+    int alt_der=altura(raiz->der);
+
+    if (alt_izq>alt_der)
+    {
+        return alt_izq+1;
+    }
+    else
+    {
+        return alt_der+1;
+    }
+}
+
+int main()
+{
+
+}

@@ -1,7 +1,30 @@
 #include <iostream>
+class Numero{
+private:
+    int num;
+public:
+    Numero():num(0){};
+    friend std::ostream & operator<<(std::ostream &O, Numero &x)
+        {
+                O<<"Numero: "<<x.num<<std::endl;
+                return O;
+        }
+        friend std::istream & operator>>(std::istream &O, Numero &x)
+        {
+                std::cout<<"Numero: "<<std::endl;
+                O>>x.num;
+                return O;
+        }
+    bool operator < (const Numero &a) {
+            return ( num < a.num);
+    }
+    bool operator > (const Numero &a) {
+            return ( num > a.num);
+    }
+};
 
 template<class T>
-class Arbol;
+class arbol;
 
 template<class T>
 class nodo{
@@ -10,256 +33,366 @@ private:
     nodo<T>* izq;
     nodo<T>* der;
 public:
-      T getdata()
-    {
-        return data;
-    }
-    nodo():izq(nullptr), der(nullptr){};
-    friend class Arbol<T>;
+    nodo():izq(nullptr),der(nullptr){};
+    friend class arbol<T>;
 };
 
 template<class T>
-class Arbol
-{
+class arbol{
 private:
     nodo<T>* raiz;
+    void insertar(T, nodo<T>*&);
+    nodo<T>* menor(nodo<T>*);
+    nodo<T>* mayor(nodo<T>*);
+    void  recorrido_preorder(nodo<T>*);
+    void  recorrido_inorder(nodo<T>*);
+    void  recorrido_postorder(nodo<T>*);
+    void  recorrido_hoja(nodo<T>*);
+    void  elimina(nodo<T>*,nodo<T>*&);
+    int   altura(nodo<T>*);
 public:
-    Arbol(): raiz(nullptr){};
-
-    void inicializa();
-    bool vacio();
-    T recupera(nodo<T>*);
-    void inserta(T);
-    nodo<T>* localiza(T);
-    nodo<T>* menor();
-    nodo<T>* mayor();
-    bool es_hoja();
-    void recorrido_preorder();
-    void recorrido_inorder();
-    void recorrido_postorder();
-    void elimina(nodo<T>*);
-    int altura();
+    arbol():raiz(nullptr){};
+    void  inicializa(nodo<T>*);
+    bool  vacio()const;
+    T recupera(nodo<T>*)const;
+    void  insertar(T);
+    nodo<T>* localiza(T,nodo<T>*);
+    void  menor();
+    void  mayor();
+    void  root();
+    bool  es_hoja(nodo<T>*)const;
+    void  recorrido_preorder();
+    void  recorrido_inorder();
+    void  recorrido_postorder();
+    void  recorrido_hoja();
+    void  elimina(T);
+    void  altura();
 };
 
 template<class T>
-void Arbol<T>::inicializa()
+void arbol<T>::inicializa(nodo<T>* arbol)
 {
-    raiz=nullptr;
+    arbol=nullptr;
 }
 
 template<class T>
-bool Arbol<T>::vacio()
-{
-        if(raiz=nullptr)
-        {
-            return true;
-        }
-        return false;
-}
-
-template<class T>
-T Arbol<T>::recupera(nodo<T>* pos)
-{
-    if(raiz==nullptr || pos==nullptr)
-    {
-
-    } else{
-        return pos->data;
-    }
-}
-
-template<class T>
-void Arbol<T>::inserta(T elem)
-{
+bool arbol<T>::vacio()const{
     if(raiz==nullptr)
-    {
-        nodo<T>* aux=new nodo<T>;
-        aux->data=elem;
-        raiz=aux;
-    }
-    else
-    {
-        if(elem<raiz->elem)
-        {
-            inserta(raiz->izq,elem);
-        }
-        else
-        {
-           inserta(raiz->der,elem);
-        }
-    }
-}
-
-template<class T>
-nodo<T>* Arbol<T>::localiza(T elem)
-{
-    if(raiz=nullptr)
-    {
-
-    }
-    else
-    {
-        if(elem=raiz->data)
-        {
-            localiza(elem, raiz->izq);
-        }
-        else
-        {
-            localiza(elem, raiz->der);
-        }
-    }
-}
-
-template<class T>
-nodo<T>* Arbol<T>::menor()
-{
-    if(raiz=nullptr)
-    {
-
-    }
-    else
-    {
-        if(raiz->izq==nullptr)
-        {
-            return raiz;
-        }
-        else
-        {
-            return menor(raiz->izq);
-        }
-    }
-}
-
-template<class T>
-nodo<T>* Arbol<T>::mayor()
-{
-    if(raiz=nullptr)
-    {
-
-    }
-    else
-    {
-        if(raiz->der==nullptr)
-        {
-            return raiz;
-        }
-        else
-        {
-            return menor(raiz->der);
-        }
-    }
-}
-
-template<class T>
-bool Arbol<T>::es_hoja()
-{
-    if(raiz==nullptr)
-    {
-        return false;
-    }
-
-    if(raiz->izq=nullptr && raiz->der=nullptr)
-    {
         return true;
-    }
     else
-    {
         return false;
+}
+
+template<class T>
+T arbol<T>::recupera(nodo<T>* pos)const{
+    if(vacio()|| pos==nullptr){
+        return NULL;
     }
+    else
+        return pos->data;
 }
 
 template<class T>
-void Arbol<T>::recorrido_preorder()
-{
-    if(raiz==nullptr)
-       {
-        return;
-       }
-
-        std::cout << raiz->elem <<std::endl;
-        recorrido_preorder(raiz->izq);
-        recorrido_preorder(raiz->der);
-}
-
-template<class T>
-void Arbol<T>::recorrido_inorder()
-{
-    if(raiz==nullptr)
-       {
-        return;
-       }
-
-        recorrido_inorder(raiz->izq);
-        std::cout << raiz->elem <<std::endl;
-        recorrido_inorder(raiz->der);
-}
-
-template<class T>
-void Arbol<T>::recorrido_postorder()
-{
-    if(raiz==nullptr)
-       {
-        return;
-       }
-
-        recorrido_postorder(raiz->izq);
-        recorrido_postorder(raiz->der);
-        std::cout << raiz->elem <<std::endl;
-}
-
-template<class T>
-void Arbol<T>::elimina(nodo<T>* pos)
-{
-    nodo<T>* pos_reemplazo;
-    if(raiz==nullptr || pos==nullptr)
-    {
-        std::cout<<"Dato no encontado"<<std::endl;
-        return;
+void arbol<T>::insertar(T elem, nodo<T>*& nuevo){
+    if(nuevo==nullptr){
+        nodo<T>* aux = new nodo<T>();
+        aux->data = elem;
+        nuevo = aux;
     }
+    else if(elem < nuevo->data)
+            insertar(elem, nuevo->izq);
+    else if(elem > nuevo->data)
+            insertar(elem, nuevo->der);
+}
 
-    if(es_hoja())
+template<class T>
+void arbol<T>::insertar(T elem){
+    if(vacio())
+        inicializa(raiz);
+    insertar(elem, raiz);
+}
+
+template<class T>
+nodo<T>* arbol<T>::localiza(T elem, nodo<T>* arbol){
+    if(arbol==nullptr)
     {
-        delete raiz;
-        raiz=nullptr;
-        return;
+        return nullptr;
     }
     else
     {
-        if(raiz->izq!=nullptr)
-        {
-            pos_reemplazo = mayor(raiz->izq);
+        if(elem < arbol->data){
+            return localiza(elem, arbol->izq);
         }
+        else if (elem > arbol->data) {
+            return localiza(elem, arbol->der);
+        }
+        else {
+            return arbol;
+        }
+    }
+}
+
+template<class T>
+nodo<T>* arbol<T>::menor(nodo<T>* arbol){
+    if(arbol==nullptr)
+    {
+        return nullptr;
+    }
+    else
+    {
+        if(arbol->izq == nullptr){
+            return arbol;
+        }
+        else{
+            return menor(arbol->izq);
+        }
+    }
+}
+
+template<class T>
+void arbol<T>::menor(){
+    nodo<T>* resp = new nodo<T>();
+    resp = menor(raiz);
+    if(resp == nullptr){
+        std::cout<<"\n\t No se encontro"<<std::endl;
+    }
+    else{
+        std::cout<<"\n\t El dato menor es "<<resp->data<<std::endl;
+    }
+    std::cout<<"\n\t ";
+    system("pause");
+}
+
+template<class T>
+nodo<T>* arbol<T>::mayor(nodo<T>* arbol){
+    if(arbol==nullptr)
+    {
+        return nullptr;
+    }
+    else
+    {
+        if(arbol->der == nullptr){
+            return arbol;
+        }
+        else{
+            return mayor(arbol->der);
+        }
+    }
+}
+
+template<class T>
+void arbol<T>::mayor(){
+    nodo<T>* resp = new nodo<T>();
+    resp = mayor(raiz);
+    if(resp == nullptr){
+        std::cout<<"\n\t No se encontro"<<std::endl;
+    }
+    else{
+        std::cout<<"\n\t El dato mayor es "<<resp->data<<std::endl;
+    }
+    std::cout<<"\n\t ";
+    system("pause");
+}
+
+template<class T>
+void arbol<T>::root(){
+    if(raiz == nullptr){
+        std::cout<<"\n\t No se agregan datos al arbol"<<std::endl;
+    }
+    else{
+        std::cout<<"\n\t El dato raiz es "<<raiz->data<<std::endl;
+    }
+    std::cout<<"\n\t ";
+    system("pause");
+}
+
+template<class T>
+bool arbol<T>::es_hoja(nodo<T>* arbol)const{
+    if(arbol==nullptr)
+        return false;
+    else{
+        if(arbol->izq==nullptr && arbol->der==nullptr)
+            return true;
         else
-        {
-            pos_reemplazo = menor(raiz->der);
-        }
+            return false;
     }
-    raiz->data = pos_reemplazo->data;
-    elimina(pos_reemplazo,raiz);
 }
 
 template<class T>
-int Arbol<T>::altura()
-{
-    if (raiz==nullptr)
-    {
-
+void arbol<T>::recorrido_preorder(nodo<T>* arbol){
+    if(arbol==nullptr){
+        return;
+    }
+        std::cout<<"\n"<<arbol->data<<std::endl;
+        recorrido_preorder(arbol->izq);
+        recorrido_preorder(arbol->der);
     }
 
-    int alt_izq=altura(raiz->izq);
-    int alt_der=altura(raiz->der);
+template<class T>
+void arbol<T>::recorrido_preorder(){
+    recorrido_preorder(raiz);
+    std::cout<<"\n";
+    system("pause");
+}
 
-    if (alt_izq>alt_der)
+template<class T>
+void arbol<T>::recorrido_inorder(nodo<T>* arbol){
+    if(arbol==nullptr){
+        return;
+    }
+        recorrido_inorder(arbol->izq);
+        std::cout<<"\n\t ->"<<arbol->data<<std::endl;
+        recorrido_inorder(arbol->der);
+    }
+
+template<class T>
+void arbol<T>::recorrido_inorder(){
+    std::cout<<"\n\t Recorrido por inorden: \n\t "<<std::endl;
+    recorrido_inorder(raiz);
+    std::cout<<"\n\t ";
+    system("pause");
+}
+
+template<class T>
+void arbol<T>::recorrido_postorder(nodo<T>* arbol){
+    if(arbol==nullptr){
+        return;
+    }
+        recorrido_postorder(arbol->izq);
+        recorrido_postorder(arbol->der);
+        std::cout<<"\n\t ->"<<arbol->data<<std::endl;
+    }
+
+template<class T>
+void arbol<T>::recorrido_postorder(){
+    std::cout<<"\n\t Recorrido por postorden: \n\t "<<std::endl;
+    recorrido_postorder(raiz);
+    std::cout<<"\n\t ";
+    system("pause");
+}
+
+template<class T>
+void arbol<T>::recorrido_hoja(nodo<T>* arbol){
+    if(arbol==nullptr){
+        return;
+    }
+        recorrido_hoja(arbol->izq);
+        if(es_hoja(arbol)){
+            std::cout<<"\n\t ES HOJA:"<<std::endl;
+            std::cout<<"\n"<<arbol->data<<std::endl;
+        }
+        recorrido_hoja(arbol->der);
+    }
+
+template<class T>
+void arbol<T>::recorrido_hoja(){
+    std::cout<<"\n\t Recorrido por inorden: \n\t "<<std::endl;
+    recorrido_hoja(raiz);
+    std::cout<<"\n\t ";
+    system("pause");
+}
+
+template<class T>
+void arbol<T>::elimina(nodo<T>* pos, nodo<T>*& arbol) {
+    if (arbol == nullptr || pos == nullptr){
+        std::cout << "Error: árbol o posición nulos" << std::endl;
+        return;
+    }
+    if(es_hoja(arbol))
     {
-        return alt_izq+1;
+        delete arbol;
+        arbol = nullptr;
+        return;
+    }
+    else if(pos->data<arbol->data)
+        elimina(pos,arbol->izq);
+    else if(pos->data>arbol->data)
+        elimina(pos,arbol->der);
+    else if(arbol->izq && arbol->der){
+        nodo<T>* high = menor(arbol->der);
+        arbol->data = high->data;
+        elimina(high,arbol->izq);
+    }
+    else{
+        nodo<T>* temp = arbol;
+        if(arbol->izq == nullptr)
+            arbol = arbol->der;
+        else if(arbol->der == nullptr)
+            arbol = arbol->izq;
+        delete temp;
+    }
+}
+
+template<class T>
+void arbol<T>::elimina(T elem){
+    nodo<T>* pos = new nodo<T>();
+    pos = localiza(elem, raiz);
+    if(pos==nullptr)
+    {
+        std::cout<<"Dato no encontrado"<<std::endl;
+    }
+    else{
+        elimina(pos,raiz);
+        std::cout<<"Se borro el dato"<<std::endl;
+    }
+}
+
+template<class T>
+int arbol<T>::altura(nodo<T>* arbol){
+    if(arbol==nullptr)
+        return 0;
+    else{
+        int alt_izq = altura(arbol->izq);
+        int alt_der = altura(arbol->der);
+
+        if(alt_izq>alt_der)
+            return alt_izq+1;
+        else
+            return alt_der+1;
+    }
+}
+
+template<class T>
+void arbol<T>::altura(){
+    if(vacio()){
+        std::cout<<"\n      No se agregan datos al arbol"<<std::endl;
     }
     else
     {
-        return alt_der+1;
+        int alt = altura(raiz);
+        std::cout<<"\n      La altura es de "<<alt<<std::endl;
     }
+    std::cout<<"\n\t ";
+    system("pause");
 }
 
 int main()
 {
 
+    arbol<Numero> miA;
+    int r;
+    Numero elem;
+
+    do
+    {
+        std::cout<<"1.Inserta\n2.Elimina\n3.Mostrar\n4.Salir\nSelecciona una opcion:"<<std::endl;
+        std::cin>>r;
+        switch(r)
+        {
+        case 1:
+            std::cin >>elem;
+            miA.insertar(elem);
+            break;
+        case 2:
+                std::cout<<"Ingrese la informaciona a eliminar:"<<std::endl;
+                std::cin >>elem;
+                miA.elimina(elem);
+            break;
+        case 3:
+                miA.recorrido_preorder();
+        break;
+        }
+    }
+    while(r!=4);
+    return 0;
 }
